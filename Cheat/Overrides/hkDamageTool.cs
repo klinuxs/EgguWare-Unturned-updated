@@ -15,12 +15,14 @@ namespace EgguWare.Overrides
 {
     public class hkDamageTool
     {
-        public static RaycastInfo OV_raycast(Ray ray, float range, int mask)
+        [Obsolete]
+        public static RaycastInfo OV_raycast(Ray ray, float range, int mask, Player ignorePlayer = null)
         {
-            return SetupRaycast(ray, range, mask);
+            return SetupRaycast(ray, range, mask, ignorePlayer);
         }
 
-        public static RaycastInfo SetupRaycast(Ray ray, float range, int mask)
+        [Obsolete]
+        public static RaycastInfo SetupRaycast(Ray ray, float range, int mask, Player ignorePlayer = null)
         {
             RaycastInfo info;
             /*
@@ -39,50 +41,72 @@ namespace EgguWare.Overrides
             if (G.Settings.AimbotOptions.SilentAim && SilAimRaycast(out RaycastInfo ri))
                 info = ri;
             else
-                info = OriginalRaycast(ray, range, mask);
+                info = OriginalRaycast(ray, range, mask, ignorePlayer);
 
             return info;
         }
 
         #region Original Raycast
-        public static RaycastInfo OriginalRaycast(Ray ray, float range, int mask)
+        [Obsolete]
+        public static RaycastInfo OriginalRaycast(Ray ray, float range, int mask, Player ignorePlayer = null)
         {
             RaycastHit hit;
             PhysicsUtility.raycast(ray, out hit, range, mask, QueryTriggerInteraction.UseGlobal);
             RaycastInfo raycastInfo = new RaycastInfo(hit);
             raycastInfo.direction = ray.direction;
+            raycastInfo.limb = ELimb.SPINE;
             if (raycastInfo.transform != null)
             {
                 if (raycastInfo.transform.CompareTag("Barricade"))
+                {
                     raycastInfo.transform = DamageTool.getBarricadeRootTransform(raycastInfo.transform);
-
+                }
                 else if (raycastInfo.transform.CompareTag("Structure"))
+                {
                     raycastInfo.transform = DamageTool.getStructureRootTransform(raycastInfo.transform);
-
-                if (raycastInfo.transform.CompareTag("Enemy"))
+                }
+                else if (raycastInfo.transform.CompareTag("Resource"))
+                {
+                    raycastInfo.transform = DamageTool.getResourceRootTransform(raycastInfo.transform);
+                }
+                else if (raycastInfo.transform.CompareTag("Enemy"))
+                {
                     raycastInfo.player = DamageTool.getPlayer(raycastInfo.transform);
-
-                if (raycastInfo.transform.CompareTag("Zombie"))
+                    if (raycastInfo.player == ignorePlayer)
+                    {
+                        raycastInfo.player = null;
+                    }
+                    raycastInfo.limb = DamageTool.getLimb(raycastInfo.transform);
+                }
+                else if (raycastInfo.transform.CompareTag("Zombie"))
+                {
                     raycastInfo.zombie = DamageTool.getZombie(raycastInfo.transform);
-
-                if (raycastInfo.transform.CompareTag("Animal"))
+                    raycastInfo.limb = DamageTool.getLimb(raycastInfo.transform);
+                }
+                else if (raycastInfo.transform.CompareTag("Animal"))
+                {
                     raycastInfo.animal = DamageTool.getAnimal(raycastInfo.transform);
-
-                raycastInfo.limb = DamageTool.getLimb(raycastInfo.transform);
-
-                if (raycastInfo.transform.CompareTag("Vehicle"))
+                    raycastInfo.limb = DamageTool.getLimb(raycastInfo.transform);
+                }
+                else if (raycastInfo.transform.CompareTag("Vehicle"))
+                {
                     raycastInfo.vehicle = DamageTool.getVehicle(raycastInfo.transform);
-
+                }
                 if (raycastInfo.zombie != null && raycastInfo.zombie.isRadioactive)
+                {
                     raycastInfo.material = EPhysicsMaterial.ALIEN_DYNAMIC;
+                }
                 else
+                {
                     raycastInfo.material = DamageTool.getMaterial(hit.point, raycastInfo.transform, raycastInfo.collider);
+                }
             }
             return raycastInfo;
         }
         #endregion
 
         #region Sphere Silent Aim
+        [Obsolete]
         public static bool SilAimRaycast(out RaycastInfo info)
         {
             ItemGunAsset currentGun = Player.player.equipment.asset as ItemGunAsset;

@@ -1,4 +1,6 @@
-﻿using SDG.Unturned;
+﻿using SDG.NetPak;
+using SDG.NetTransport;
+using SDG.Unturned;
 using Steamworks;
 using System;
 using System.Collections;
@@ -14,10 +16,9 @@ namespace EgguWare.Overrides
     {
 		public static float LastSpy;
 
-        public void OV_askScreenshot(CSteamID steamid)
+        public void OV_ReceiveTakeScreenshot()
         {
-            if (Player.player.channel.checkServer(steamid))
-                StartCoroutine(takeScreenshot());
+            StartCoroutine(takeScreenshot());
         }
 
         private IEnumerator takeScreenshot()
@@ -68,17 +69,19 @@ namespace EgguWare.Overrides
 
             if (data.Length < 30000)
             {
-                Player.player.channel.longBinaryData = true;
-                Player.player.channel.openWrite();
-                Player.player.channel.write(data);
-                Player.player.channel.closeWrite("tellScreenshotRelay", ESteamCall.SERVER,
-                    ESteamPacket.UPDATE_RELIABLE_CHUNK_BUFFER);
-                Player.player.channel.longBinaryData = false;
+                SendScreenshotRelay.Invoke(((Player)(object)this).GetNetId(), ENetReliability.Reliable, delegate (NetPakWriter writer)
+                {
+                    ushort num6 = (ushort)data.Length;
+                    writer.WriteUInt16(num6);
+                    writer.WriteBytes(data, (int)num6);
+                });
             }
 
             yield return new WaitForFixedUpdate();
             yield return new WaitForEndOfFrame();
             G.BeingSpied = false;
         }
+
+        private static readonly ServerInstanceMethod SendScreenshotRelay = ServerInstanceMethod.Get(typeof(Player), "ReceiveScreenshotRelay");
     }
 }

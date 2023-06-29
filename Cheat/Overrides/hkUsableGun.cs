@@ -26,12 +26,6 @@ namespace EgguWare.Overrides
         {
             Useable PlayerUse = Player.player.equipment.useable;
 
-            if (Time.realtimeSinceStartup - PlayerLifeUI.hitmarkers[0].lastHit > PlayerUI.HIT_TIME)
-            {
-                PlayerLifeUI.hitmarkers[0].hitBuildImage.isVisible = false;
-                PlayerLifeUI.hitmarkers[0].hitCriticalImage.isVisible = false;
-                PlayerLifeUI.hitmarkers[0].hitEntitiyImage.isVisible = false;
-            }
 
             ItemGunAsset PAsset = (ItemGunAsset)Player.player.equipment.asset;
             PlayerLook Look = Player.player.look;
@@ -58,7 +52,7 @@ namespace EgguWare.Overrides
 
                     EPlayerHit eplayerhit = CalcHitMarker(PAsset, ref ri);
                     PlayerUI.hitmark(0, Vector3.zero, false, eplayerhit);
-                    Player.player.input.sendRaycast(ri);
+                    Player.player.input.sendRaycast(ri, ERaycastInfoUsage.Gun);
                     Weapons.AddTracer(ri);
                     Weapons.AddDamage(ri);
                     bulletInfo.steps = 254;
@@ -79,7 +73,7 @@ namespace EgguWare.Overrides
                 {
                     EPlayerHit eplayerhit = CalcHitMarker(PAsset, ref ri);
                     PlayerUI.hitmark(0, Vector3.zero, false, eplayerhit);
-                    Player.player.input.sendRaycast(ri);
+                    Player.player.input.sendRaycast(ri, ERaycastInfoUsage.Gun);
                     Weapons.AddTracer(ri);
                     Weapons.AddDamage(ri);
                 }
@@ -140,7 +134,7 @@ namespace EgguWare.Overrides
                     ResourceSpawnpoint resourceSpawnpoint = ResourceManager.getResourceSpawnpoint(x, y, index);
 
                     if (resourceSpawnpoint == null || resourceSpawnpoint.isDead ||
-                        resourceSpawnpoint.asset.bladeID != PAsset.bladeID) return eplayerhit;
+                         !PAsset.bladeIDs.Contains(resourceSpawnpoint.asset.bladeID)) return eplayerhit;
 
                     if (eplayerhit == EPlayerHit.NONE)
                         eplayerhit = EPlayerHit.BUILD;
