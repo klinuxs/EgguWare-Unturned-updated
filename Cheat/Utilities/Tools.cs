@@ -302,13 +302,36 @@ namespace EgguWare.Utilities
         }
 
         // binjector moment
-        public static void OverrideMethod(Type defaultClass, Type overrideClass, string method, BindingFlags bindingflag1, BindingFlags bindingflag2, BindingFlags overrideflag1, BindingFlags overrideflag2)
+        public static void OverrideMethod(Type defaultClass, Type overrideClass, string method, BindingFlags bindingflag, BindingFlags overrideflag)
         {
             string overriddenmethod = "OV_" + method;
 
-            var MethodToOverride = defaultClass.GetMember(method, MemberTypes.Method, bindingflag1 | bindingflag2).Cast<MethodInfo>();
+            var MethodToOverride = defaultClass.GetMember(method, MemberTypes.Method, bindingflag);
 
-            OverrideHelper.RedirectCalls(MethodToOverride.ToArray()[0], overrideClass.GetMethod(overriddenmethod, overrideflag1 | overrideflag2));
+            if (MethodToOverride == null || MethodToOverride.Length == 0)
+            {
+                Log($"Original method not found: {defaultClass.AssemblyQualifiedName}.{method}");
+
+                return;
+            }
+
+            OverrideHelper.RedirectCalls((MethodInfo)MethodToOverride[0], overrideClass.GetMethod(overriddenmethod, overrideflag));
+        }
+
+        public static void OverrideMethod(Type defaultClass, Type overrideClass, string method, BindingFlags bindingflag, BindingFlags overrideflag, Type[] args)
+        {
+            string overriddenmethod = "OV_" + method;
+
+            var MethodToOverride = defaultClass.GetMethod(method, bindingflag, null, args, null);
+
+            if (MethodToOverride == null)
+            {
+                Log($"Original method not found: {defaultClass.AssemblyQualifiedName}.{method}");
+
+                return;
+            }
+
+            OverrideHelper.RedirectCalls(MethodToOverride, overrideClass.GetMethod(overriddenmethod, overrideflag));
         }
 
         public static float? GetGunDistance()

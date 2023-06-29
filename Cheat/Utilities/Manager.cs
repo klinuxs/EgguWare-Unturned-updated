@@ -41,17 +41,26 @@ namespace EgguWare.Utilities
             #region Overrides   
             T.Log("Starting Overrides");
             // would be better to use harmony instead but im lazy LOL
-            T.OverrideMethod(typeof(DamageTool), typeof(hkDamageTool), "raycast", BindingFlags.Static, BindingFlags.Public, BindingFlags.Public, BindingFlags.Static); //DamageTool
-            T.OverrideMethod(typeof(PlayerPauseUI), typeof(hkPlayerPauseUI), "onClickedExitButton", BindingFlags.Static, BindingFlags.NonPublic, BindingFlags.Public, BindingFlags.Static); //PlayerPauseUI
-            T.OverrideMethod(typeof(Provider), typeof(hkProvider), "onApplicationWantsToQuit", BindingFlags.Instance, BindingFlags.NonPublic, BindingFlags.Public, BindingFlags.Static); //Provider
-            T.OverrideMethod(typeof(Player), typeof(hkPlayer), "askScreenshot", BindingFlags.Public, BindingFlags.Instance, BindingFlags.Public, BindingFlags.Instance); //Player
-            T.OverrideMethod(typeof(UseableGun), typeof(hkUsableGun), "ballistics", BindingFlags.NonPublic, BindingFlags.Instance, BindingFlags.Public, BindingFlags.Instance); //UsableGun
-            T.OverrideMethod(typeof(ChatManager), typeof(hkChatManager), "receiveChatMessage", BindingFlags.Static, BindingFlags.Public, BindingFlags.Public, BindingFlags.Static); //ChatManager
-            T.OverrideMethod(typeof(LocalHwid), typeof(hkLocalHwid), "getHwid", BindingFlags.Static, BindingFlags.Public, BindingFlags.Public, BindingFlags.Static); //LocalHwid
-            T.OverrideMethod(typeof(ItemManager), typeof(hkItemManager), "getItemsInRadius", BindingFlags.Static, BindingFlags.Public, BindingFlags.Public, BindingFlags.Static); //ItemManager
-            T.OverrideMethod(typeof(Regions), typeof(hkRegions), "getRegionsInRadius", BindingFlags.Static, BindingFlags.Public, BindingFlags.Public, BindingFlags.Static); //Regions
-            T.OverrideMethod(typeof(PlayerUI), typeof(hkPlayerUI), "hitmark", BindingFlags.Static, BindingFlags.Public, BindingFlags.Public, BindingFlags.Static); //PlayerUI
-            T.OverrideMethod(typeof(PlayerQuests), typeof(hkPlayerQuests), "isMemberOfSameGroupAs", BindingFlags.Public, BindingFlags.Instance, BindingFlags.Public, BindingFlags.Instance); //PlayerQuests
+            T.OverrideMethod(typeof(DamageTool), typeof(hkDamageTool), "raycast", BindingFlags.Static | BindingFlags.Public,
+                BindingFlags.Public | BindingFlags.Static, new Type[] { typeof(Ray), typeof(float), typeof(int), typeof(Player) }); //DamageTool
+            T.OverrideMethod(typeof(PlayerPauseUI), typeof(hkPlayerPauseUI), "onClickedExitButton", BindingFlags.Static | BindingFlags.NonPublic,
+                BindingFlags.Public | BindingFlags.Static); //PlayerPauseUI
+            T.OverrideMethod(typeof(Provider), typeof(hkProvider), "onApplicationWantsToQuit", BindingFlags.Instance | BindingFlags.NonPublic,
+                BindingFlags.Public | BindingFlags.Static); //Provider
+            T.OverrideMethod(typeof(Player), typeof(hkPlayer), "ReceiveTakeScreenshot", BindingFlags.Public | BindingFlags.Instance,
+                BindingFlags.Public | BindingFlags.Instance); //Player
+            T.OverrideMethod(typeof(UseableGun), typeof(hkUsableGun), "ballistics", BindingFlags.NonPublic | BindingFlags.Instance,
+                BindingFlags.Public | BindingFlags.Instance); //UsableGun
+            T.OverrideMethod(typeof(ChatManager), typeof(hkChatManager), "receiveChatMessage", BindingFlags.Static | BindingFlags.Public,
+                BindingFlags.Public | BindingFlags.Static); //ChatManager
+            T.OverrideMethod(typeof(LocalHwid), typeof(hkLocalHwid), "getHwid", BindingFlags.Static | BindingFlags.Public,
+                BindingFlags.Public | BindingFlags.Static); //LocalHwid
+            T.OverrideMethod(typeof(ItemManager), typeof(hkItemManager), "getItemsInRadius", BindingFlags.Static | BindingFlags.Public,
+                BindingFlags.Public | BindingFlags.Static); //ItemManager
+            T.OverrideMethod(typeof(Regions), typeof(hkRegions), "getRegionsInRadius", BindingFlags.Static | BindingFlags.Public,
+                BindingFlags.Public | BindingFlags.Static); //Regions
+            T.OverrideMethod(typeof(PlayerQuests), typeof(hkPlayerQuests), "isMemberOfSameGroupAs", BindingFlags.Public | BindingFlags.Instance,
+                BindingFlags.Public | BindingFlags.Instance); //PlayerQuests
             T.Log("Overrides Complete");
 
             #endregion
